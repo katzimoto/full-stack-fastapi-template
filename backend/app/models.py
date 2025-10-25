@@ -90,6 +90,11 @@ class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
+
+    created_date: datetime = Field(default_factory=datetime.now)
+    last_modified: datetime = Field(
+        default_factory=datetime.now, sa_column_kwargs={"onupdate": datetime.now}
+    )
     owns: list["Person"] = Relationship(
         back_populates="owners", link_model=PersonUserOwnersLink
     )
@@ -200,6 +205,11 @@ class Person(PersonBase, table=True):
         back_populates="persons", link_model=PersonEventsLink
     )
 
+    created_date: datetime = Field(default_factory=datetime.now)
+    last_modified: datetime = Field(
+        default_factory=datetime.now, sa_column_kwargs={"onupdate": datetime.now}
+    )
+
 
 class PersonListPublic(SQLModel):
     persons: list["PersonPublic"]
@@ -235,6 +245,10 @@ class Event(EventBase, table=True):
         back_populates="invited_events", link_model=UserEventsInvitesLink
     )
     inviteation_created: list["Inviteation"] = Relationship(back_populates="event")
+    created_date: datetime = Field(default_factory=datetime.now)
+    last_modified: datetime = Field(
+        default_factory=datetime.now, sa_column_kwargs={"onupdate": datetime.now}
+    )
 
 
 class EventCreate(EventBase):

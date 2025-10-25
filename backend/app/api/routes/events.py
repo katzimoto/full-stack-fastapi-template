@@ -109,7 +109,7 @@ def update_event(
         )
     if current_user is not db_user.creator:
         raise HTTPException(
-            status_code=403,
+            status_code=405,
             detail="This event belong to someone else",
         )
 
@@ -131,7 +131,7 @@ def delete_person(
         raise HTTPException(status_code=404, detail="Event not found")
     if current_user is not event.creator:
         raise HTTPException(
-            status_code=403,
+            status_code=405,
             detail="This event belong to someone else",
         )
     session.delete(event)
@@ -199,7 +199,7 @@ def remove_attendee(
         raise HTTPException(status_code=404, detail="Event not found")
     if current_user is not event.creator:
         raise HTTPException(
-            status_code=404,
+            status_code=405,
             detail="The event doesn't belong to this user",
         )
 
@@ -215,7 +215,7 @@ def remove_attendee(
     return Message(message="Remove attendee successfully")
 
 
-@router.post("/{event_id}/create-invite", response_model=Inviteation)
+@router.post("/create-invite", response_model=uuid.UUID)
 def create_invitation(
     *,
     session: SessionDep,
@@ -231,11 +231,11 @@ def create_invitation(
         raise HTTPException(status_code=404, detail="Event not found")
     if current_user is not event.creator:
         raise HTTPException(
-            status_code=404,
+            status_code=405,
             detail="The event doesn't belong to this user",
         )
     invitation = Inviteation(expire_time=expire_time, creator=current_user, event=event)
     session.add(invitation)
     session.commit()
     session.refresh(invitation)
-    return invitation
+    return invitation.id
