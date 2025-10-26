@@ -14,7 +14,7 @@ class UserEventsInvitesLink(SQLModel, table=True):
     )
 
 
-class UserEventsAttendiesLink(SQLModel, table=True):
+class UserEventsAttendeesLink(SQLModel, table=True):
     event_id: uuid.UUID | None = Field(
         default=None, foreign_key="event.id", primary_key=True
     )
@@ -48,6 +48,7 @@ class PersonUserFollowersLink(SQLModel, table=True):
     person_id: uuid.UUID | None = Field(
         default=None, foreign_key="person.id", primary_key=True
     )
+    notify: bool = Field(default=True)
 
 
 # Shared properties
@@ -102,7 +103,7 @@ class User(UserBase, table=True):
         back_populates="followers", link_model=PersonUserFollowersLink
     )
     attend_events: list["Event"] = Relationship(
-        back_populates="attends", link_model=UserEventsAttendiesLink
+        back_populates="attends", link_model=UserEventsAttendeesLink
     )
     invited_events: list["Event"] = Relationship(
         back_populates="invited_users", link_model=UserEventsInvitesLink
@@ -239,7 +240,7 @@ class Event(EventBase, table=True):
         back_populates="events", link_model=PersonEventsLink
     )
     attends: list[User] = Relationship(
-        back_populates="attend_events", link_model=UserEventsAttendiesLink
+        back_populates="attend_events", link_model=UserEventsAttendeesLink
     )
     invited_users: list[User] = Relationship(
         back_populates="invited_events", link_model=UserEventsInvitesLink
